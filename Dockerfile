@@ -13,20 +13,23 @@ RUN apt-get update && \
     apt-get update
 
 # CppUnit fails to compile if downloaded by HemeLB's CMake, install it system-wide
-RUN apt-get install -y git cmake libcppunit-dev libcgal-dev libvtk6-dev python-wxtools python-wxversion swig openmpi-bin libopenmpi-dev
+RUN apt-get install -y git cmake libcppunit-dev libcgal-dev python-wxtools python-wxversion swig openmpi-bin libopenmpi-dev freeglut3-dev
 RUN pip install cython numpy PyYAML
 
 ##
 # Download and install VMTK
 ##
 WORKDIR /tmp
-ADD http://s3.amazonaws.com/vmtk-installers/1.3/vmtk-1.3.linux-x86_64.egg /tmp/
-RUN easy_install vmtk-1.3.linux-x86_64.egg
-ENV VMTKHOME=/usr/local/lib/python2.7/dist-packages/vmtk-1.3.linux-x86_64.egg
-# These are NOT concatenated as the setting of VMTKHOME isn't visible until the end of the command.
-ENV PATH=$VMTKHOME/vmtk/bin:$PATH \
-    LD_LIBRARY_PATH=$VMTKHOME/vmtk/lib:$LD_LIBRARY_PATH \
-    PYTHONPATH=$VMTKHOME/vmtk:$PYTHONPATH
+RUN git clone https://github.com/vmtk/vmtk.git
+RUN mkdir vmtk-build && \
+    cd vmtk-build && \
+    cmake ../vmtk && \
+    make
+# The following two ENV statements are NOT concatenated as the setting of VMTKHOME isn't visible until the end of the command.
+ENV VMTKHOME=/tmp/vmtk-build/Install
+ENV PATH=$VMTKHOME/bin:$PATH \
+    LD_LIBRARY_PATH=$VMTKHOME/lib:$LD_LIBRARY_PATH \
+    PYTHONPATH=$VMTKHOME/lib/python2.7/site-packages:$PYTHONPATH
 
 ##
 # Download and install HemeLB
@@ -46,7 +49,6 @@ WORKDIR /tmp
 RUN cd hemelb/Tools && \
     python setup.py build_ext --inplace && \
     cd setuptool && \
-    export VTKINCLUDE=/usr/include/vtk-6.0 && \
     python setup.py build_ext --inplace
 
 # Install the setup tool scripts and set environment variables
