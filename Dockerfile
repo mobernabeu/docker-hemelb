@@ -36,10 +36,15 @@ ENV PATH=$VMTKHOME/bin:$PATH \
 ##
 WORKDIR /tmp
 RUN git clone https://github.com/UCL/hemelb.git
-RUN mkdir hemelb/build && \
-    cd hemelb/build && \
-    cmake .. -DHEMELB_STEERING_LIB=none -DHEMELB_USE_SSE3=ON && \
-    make
+RUN mkdir hemelb/dependencies/build && \
+    cd hemelb/dependencies/build && \
+    cmake .. && \
+    make && \
+    cd ../../Code && \
+    mkdir build && \
+    cd build && \
+    cmake -DHEMELB_STEERING_LIB:string=none -DHEMELB_KERNEL:string=NNCY -DHEMELB_USE_SSE3:string=ON -DHEMELB_OPTIMISATION:string="-O3 -DNDEBUG" -DHEMELB_WALL_BOUNDARY:string=BFL -DHEMELB_INLET_BOUNDARY:string=LADDIOLET -DHEMELB_WALL_INLET_BOUNDARY:string=LADDIOLETBFL -DHEMELB_WALL_OUTLET_BOUNDARY:string=NASHZEROTHORDERPRESSUREBFL .. && \
+    make install
 
 ##
 # Configure the setup tool
