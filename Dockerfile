@@ -1,19 +1,23 @@
 # Taking as base image a Ubuntu Desktop container with web-based noVNC connection enabled
-FROM dorowu/ubuntu-desktop-lxde-vnc
+FROM dorowu/ubuntu-desktop-lxde-vnc:release-v1.2
 MAINTAINER Miguel O. Bernabeu (miguel.bernabeu@ed.ac.uk)
 
 ##
 # Dependencies
 ##
-# Ubuntu's OpenMPI is in Universe. Our base container runs Ubuntu 14.04, which doesn't provide cmake 3.2, add PPA repo
-RUN apt-get update && \
-    apt-get install -y software-properties-common && \
-    add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu/ trusty universe" && \
-    add-apt-repository ppa:george-edison55/cmake-3.x && \
-    apt-get update
-
 # CppUnit fails to compile if downloaded by HemeLB's CMake, install it system-wide
-RUN apt-get install -y git cmake libcppunit-dev libcgal-dev python-wxtools python-wxversion swig openmpi-bin libopenmpi-dev freeglut3-dev
+RUN apt-get update && apt-get install -y \
+    git \
+    cmake \
+    libcppunit-dev \
+    libcgal-dev \
+    python-wxtools \
+    python-wxversion \
+    swig \
+    openmpi-bin \
+    libopenmpi-dev \
+    freeglut3-dev \
+ && rm -rf /var/lib/apt/lists/*
 RUN pip install cython numpy PyYAML
 
 ##
