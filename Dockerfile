@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     libopenmpi-dev \
     freeglut3-dev \
  && rm -rf /var/lib/apt/lists/*
+RUN pip install --upgrade pip
 RUN pip install cython numpy PyYAML
 
 ##
@@ -39,7 +40,7 @@ ENV PATH=$VMTKHOME/bin:$PATH \
 # Download and install HemeLB
 ##
 WORKDIR /tmp
-RUN git clone https://github.com/UCL/hemelb.git
+RUN git clone https://github.com/mobernabeu/hemelb.git
 RUN mkdir hemelb/dependencies/build && \
     cd hemelb/dependencies/build && \
     cmake .. && \
