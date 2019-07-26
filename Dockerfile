@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     freeglut3-dev \
  && rm -rf /var/lib/apt/lists/*
 RUN pip install --upgrade pip
-RUN pip install cython numpy PyYAML
+RUN pip install cython numpy PyYAML joblib
 
 ##
 # Download and install VMTK
